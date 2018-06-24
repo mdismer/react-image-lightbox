@@ -83,16 +83,17 @@ class ReactImageLightbox extends Component {
   }
 
   // Request to transition to the previous image
-  static getTransform({ x = 0, y = 0, zoom = 1, width, targetWidth }) {
+  static getTransform({ x = 0, y = 0, zoom = 1, width, height }) {
     let nextX = x;
     const windowWidth = getWindowWidth();
     if (width > windowWidth) {
       nextX += (windowWidth - width) / 2;
     }
-    const scaleFactor = zoom * (targetWidth / width);
 
     return {
-      transform: `translate3d(${nextX}px,${y}px,0) scale3d(${scaleFactor},${scaleFactor},1)`,
+      transform: `translate3d(${nextX}px,${y}px,0) scale3d(${zoom},${zoom},1)`,
+      width,
+      height,
     };
   }
 
@@ -323,8 +324,8 @@ class ReactImageLightbox extends Component {
 
     return {
       src: imageSrc,
-      height: this.imageCache[imageSrc].height,
-      width: this.imageCache[imageSrc].width,
+      height: fitSizes.height,
+      width: fitSizes.width,
       targetHeight: fitSizes.height,
       targetWidth: fitSizes.width,
     };
@@ -1474,6 +1475,7 @@ class ReactImageLightbox extends Component {
           // Focus on the div with key handlers
           if (this.outerEl) {
             this.outerEl.focus();
+            this.outerEl.addEventListener('touchmove', (e) => e.preventDefault())
           }
 
           onAfterOpen();

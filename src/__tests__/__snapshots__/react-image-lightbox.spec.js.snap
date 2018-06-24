@@ -217,7 +217,9 @@ exports[`Snapshot Testing Lightbox renders properly" 1`] = `
                 key="/fake/image/src.jpgi0"
                 style={
                   Object {
-                    "transform": "translate3d(0px,0px,0) scale3d(NaN,NaN,1)",
+                    "height": undefined,
+                    "transform": "translate3d(0px,0px,0) scale3d(1,1,1)",
+                    "width": undefined,
                   }
                 }
               >
