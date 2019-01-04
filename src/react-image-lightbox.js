@@ -91,7 +91,7 @@ class ReactImageLightbox extends Component {
     }
 
     return {
-      transform: `translate3d(${nextX}px,${y}px,0) scale3d(${zoom},${zoom},1)`,
+      transform: `translate(${nextX}px,${y}px) scale(${zoom},${zoom})`,
       width,
       height,
     };
