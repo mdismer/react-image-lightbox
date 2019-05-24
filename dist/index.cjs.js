@@ -8,6 +8,7 @@ var React = require('react');
 var React__default = _interopDefault(React);
 var PropTypes = _interopDefault(require('prop-types'));
 var Modal = _interopDefault(require('react-modal'));
+var EXIF = _interopDefault(require('exif-js'));
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -275,9 +276,33 @@ function (_Component) {
   _inherits(ReactImageLightbox, _Component);
 
   _createClass(ReactImageLightbox, null, [{
+    key: "isIphone",
+    value: function isIphone() {
+      var userAgent = global.navigator.userAgent.toLowerCase();
+      return /iphone|ipod|ipad/.test(userAgent);
+    }
+  }, {
     key: "isTargetMatchImage",
     value: function isTargetMatchImage(target) {
       return target && /ril-image-current/.test(target.className);
+    }
+  }, {
+    key: "isNeedFixOrientation",
+    value: function isNeedFixOrientation(orientation) {
+      if (orientation === 5 || orientation === 6 || orientation === 7 || orientation === 8) {
+        return true;
+      }
+
+      return false;
+    }
+  }, {
+    key: "getSizeByOrientation",
+    value: function getSizeByOrientation(width, height, orientation) {
+      if (ReactImageLightbox.isNeedFixOrientation(orientation)) {
+        return [height, width];
+      }
+
+      return [width, height];
     }
   }, {
     key: "parseMouseEvent",
@@ -1483,15 +1508,39 @@ function (_Component) {
       inMemoryImage.onload = function () {
         _this12.props.onImageLoad(imageSrc, srcType, inMemoryImage);
 
-        _this12.imageCache[imageSrc] = {
-          loaded: true,
-          width: inMemoryImage.width,
-          height: inMemoryImage.height
-        };
-        done();
+        var originWidth = inMemoryImage.width;
+        var originHeight = inMemoryImage.height;
+
+        if (ReactImageLightbox.isIphone()) {
+          EXIF.getData(inMemoryImage, function () {
+            var orientation = EXIF.getTag(inMemoryImage, 'Orientation');
+
+            var _ReactImageLightbox$g = ReactImageLightbox.getSizeByOrientation(originWidth, originHeight, orientation),
+                _ReactImageLightbox$g2 = _slicedToArray(_ReactImageLightbox$g, 2),
+                width = _ReactImageLightbox$g2[0],
+                height = _ReactImageLightbox$g2[1];
+
+            _this12.saveImgCache(imageSrc, width, height);
+
+            done();
+          });
+        } else {
+          _this12.saveImgCache(imageSrc, originWidth, originHeight);
+
+          done();
+        }
       };
 
       inMemoryImage.src = imageSrc;
+    }
+  }, {
+    key: "saveImgCache",
+    value: function saveImgCache(imageSrc, width, height) {
+      this.imageCache[imageSrc] = {
+        loaded: true,
+        width: width,
+        height: height
+      };
     } // Load all images and their thumbnails
 
   }, {
