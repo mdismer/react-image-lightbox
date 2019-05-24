@@ -59,7 +59,8 @@
   ],
   "dependencies": {
     "prop-types": "^15.6.2",
-    "react-modal": "^3.8.1"
+    "react-modal": "^3.8.1",
+    "exif-js": "^2.3.0"
   },
   "peerDependencies": {
     "react": "^16.x",
